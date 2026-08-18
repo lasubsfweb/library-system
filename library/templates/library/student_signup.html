@@ -1,0 +1,51 @@
+{% extends 'library/auth_base.html' %}
+{% block title %}Student Sign Up — Agape Library{% endblock %}
+{% block subtitle %}Create your student account{% endblock %}
+
+{% block form %}
+<form method="post" novalidate>
+  {% csrf_token %}
+  {% if form.non_field_errors %}
+  <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+  {% endif %}
+
+  <div class="mb-3">
+    <label class="form-label">Full Name</label>
+    {{ form.name }}
+    <ul class="errorlist">{% for e in form.name.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Matric Number</label>
+    {{ form.matric_number }}
+    <ul class="errorlist">{% for e in form.matric_number.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+  </div>
+  <div class="row">
+    <div class="col mb-3">
+      <label class="form-label">Department</label>
+      {{ form.department }}
+      <ul class="errorlist">{% for e in form.department.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+    </div>
+    <div class="col mb-3">
+      <label class="form-label">Level</label>
+      {{ form.level }}
+      <ul class="errorlist">{% for e in form.level.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+    </div>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Password</label>
+    {{ form.password }}
+    <ul class="errorlist">{% for e in form.password.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Confirm Password</label>
+    {{ form.confirm_password }}
+    <ul class="errorlist">{% for e in form.confirm_password.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+  </div>
+  <button type="submit" class="btn-submit">Create Account</button>
+</form>
+{% endblock %}
+
+{% block footer %}
+Already have an account? <a href="{% url 'student_login' %}">Sign in</a> &nbsp;|&nbsp; <a href="{% url 'home' %}">←
+  Home</a>
+{% endblock %}

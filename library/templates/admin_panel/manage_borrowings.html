@@ -1,0 +1,67 @@
+{% extends 'library/base.html' %}
+{% block title %}Borrowings — NovaRead{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0 fw-bold" style="color:var(--text-main);"><i class="fa fa-exchange-alt me-2" style="color:var(--accent);"></i>All Borrowings</h4>
+  <a href="{% url 'admin_borrow' %}" class="btn-accent"><i class="fa fa-plus me-1"></i>Issue Book</a>
+</div>
+
+<!-- Filter -->
+<div class="table-card p-3 mb-4">
+  <form method="get" class="d-flex gap-3 align-items-center">
+    <span style="font-size:.875rem;font-weight:600;color:#3d4a5c;">Filter:</span>
+    <a href="{% url 'manage_borrowings' %}" class="btn btn-sm {% if not status_filter %}btn-dark{% else %}btn-outline-secondary{% endif %}">All</a>
+    <a href="?status=borrowed" class="btn btn-sm {% if status_filter == 'borrowed' %}btn-warning text-dark{% else %}btn-outline-warning{% endif %}">Borrowed</a>
+    <a href="?status=returned" class="btn btn-sm {% if status_filter == 'returned' %}btn-success{% else %}btn-outline-success{% endif %}">Returned</a>
+  </form>
+</div>
+
+<div class="table-card">
+  {% if records %}
+  <table class="table table-hover mb-0">
+    <thead><tr><th>#</th><th>Student</th><th>Book</th><th>Borrowed</th><th>Due</th><th>Returned</th><th>Status</th><th>Fine</th><th>Action</th></tr></thead>
+    <tbody>
+      {% for r in records %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>
+          <strong>{{ r.student.name }}</strong>
+          <div style="font-size:.75rem;color:#9aa5b4;">{{ r.student.matric_number }}</div>
+        </td>
+        <td>{{ r.book.title }}</td>
+        <td>{{ r.borrow_date }}</td>
+        <td>{{ r.due_date }}</td>
+        <td>{{ r.return_date|default:"—" }}</td>
+        <td>
+          {% if r.status == 'returned' %}
+            <span class="badge badge-returned">Returned</span>
+          {% elif r.is_overdue %}
+            <span class="badge badge-overdue">Overdue</span>
+          {% else %}
+            <span class="badge badge-borrowed">Active</span>
+          {% endif %}
+        </td>
+        <td>{% if r.fine_amount > 0 %}<span style="color:#dc3545;font-weight:600;">₦{{ r.fine_amount }}</span>{% else %}—{% endif %}</td>
+        <td>
+          {% if r.status == 'borrowed' %}
+          <form method="post" action="{% url 'admin_return' r.pk %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-outline-success" onclick="return confirm('Mark as returned?')">
+              <i class="fa fa-undo me-1"></i>Return
+            </button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="p-5 text-center text-muted">
+    <i class="fa fa-exchange-alt fa-2x mb-2 d-block"></i>
+    No borrowing records{% if status_filter %} with status "{{ status_filter }}"{% endif %}.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

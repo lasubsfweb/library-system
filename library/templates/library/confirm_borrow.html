@@ -1,0 +1,27 @@
+{% extends 'library/base.html' %}
+{% block title %}Confirm Borrow — Agape Library{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+  <a href="{% url 'browse_books' %}" style="color:#e8a020;text-decoration:none;font-size:.875rem;">← Back to Books</a>
+</div>
+<div class="form-card mx-auto">
+  <h5 class="fw-bold mb-1" style="color:var(--text-main);">Confirm Borrow</h5>
+  <p class="text-muted mb-4">Please confirm the details below before borrowing.</p>
+  <div style="background:var(--bg-main);border: 1px solid var(--border-color);border-radius:8px;padding:1rem 1.25rem;margin-bottom:1.5rem;">
+    <div class="mb-2"><strong>Book:</strong> {{ book.title }}</div>
+    <div class="mb-2"><strong>Author:</strong> {{ book.author }}</div>
+    <div class="mb-2"><strong>Category:</strong> {{ book.category }}</div>
+    <div class="mb-2"><strong>Available Copies:</strong> {{ book.available_copies }}</div>
+    <div class="mb-2"><strong>Loan Period:</strong> 14 days</div>
+    <div><strong>Fine:</strong> ₦50/day for late returns</div>
+  </div>
+  <form method="post">
+    {% csrf_token %}
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn-primary-custom btn">Confirm Borrow</button>
+      <a href="{% url 'browse_books' %}" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

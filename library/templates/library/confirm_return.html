@@ -1,0 +1,26 @@
+{% extends 'library/base.html' %}
+{% block title %}Confirm Return — Agape Library{% endblock %}
+
+{% block content %}
+<div class="form-card mx-auto">
+  <h5 class="fw-bold mb-1" style="color:var(--text-main);">Return Book</h5>
+  <p class="text-muted mb-4">Confirm that you are returning this book.</p>
+  <div style="background:var(--bg-main);border: 1px solid var(--border-color);border-radius:8px;padding:1rem 1.25rem;margin-bottom:1.5rem;">
+    <div class="mb-2"><strong>Book:</strong> {{ record.book.title }}</div>
+    <div class="mb-2"><strong>Borrowed:</strong> {{ record.borrow_date }}</div>
+    <div class="mb-2"><strong>Due:</strong> {{ record.due_date }}</div>
+    {% if record.is_overdue %}
+    <div class="alert alert-danger mb-0 mt-2">
+      <strong>Overdue by {{ record.days_overdue }} days.</strong> Fine: ₦{{ record.fine_amount }}
+    </div>
+    {% endif %}
+  </div>
+  <form method="post">
+    {% csrf_token %}
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-success">Confirm Return</button>
+      <a href="{% url 'student_dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

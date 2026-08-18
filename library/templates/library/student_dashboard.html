@@ -1,0 +1,127 @@
+{% extends 'library/base.html' %}
+{% block title %}My Dashboard — Agape Library{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h4 class="mb-0 fw-bold" style="color:var(--text-main);">Welcome, {{ user.name }} 👋</h4>
+    <small class="text-muted">{{ user.matric_number }} &bull; {{ user.department }} &bull; {{ user.level }}
+      Level</small>
+  </div>
+  <a href="{% url 'browse_books' %}" class="btn-accent"><i class="fa fa-search me-1"></i>Browse Books</a>
+</div>
+
+<!-- Stats -->
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="stat-card">
+      <div class="stat-value">{{ active_borrows.count }}</div>
+      <div class="stat-label">Currently Borrowed</div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="stat-card" style="border-left-color:#dc3545;">
+      <div class="stat-value" style="color:#dc3545;">{{ overdue_count }}</div>
+      <div class="stat-label">Overdue Books</div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="stat-card" style="border-left-color:#198754;">
+      <div class="stat-value" style="color:#198754;">{{ total_borrowed }}</div>
+      <div class="stat-label">Total Borrowed (All Time)</div>
+    </div>
+  </div>
+</div>
+
+<!-- Active Borrows -->
+<div class="table-card mb-4">
+  <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
+    <h6 class="mb-0 fw-bold"><i class="fa fa-book-reader me-2" style="color:#e8a020;"></i>Currently Borrowed</h6>
+  </div>
+  {% if active_borrows %}
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Book</th>
+        <th>Author</th>
+        <th>Borrowed</th>
+        <th>Due Date</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in active_borrows %}
+      <tr>
+        <td><strong>{{ r.book.title }}</strong></td>
+        <td>{{ r.book.author }}</td>
+        <td>{{ r.borrow_date }}</td>
+        <td>{{ r.due_date }}</td>
+        <td>
+          {% if r.is_overdue %}
+          <span class="badge badge-overdue">Overdue ({{ r.days_overdue }}d, ₦{{ r.fine_amount }})</span>
+          {% else %}
+          <span class="badge badge-borrowed">Borrowed</span>
+          {% endif %}
+        </td>
+        <td>
+          <form method="post" action="{% url 'student_return' r.pk %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-outline-success" onclick="return confirm('Return this book?')">
+              <i class="fa fa-undo me-1"></i>Return
+            </button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="p-4 text-center text-muted">
+    <i class="fa fa-book fa-2x mb-2 d-block"></i>
+    You have no active borrows. <a href="{% url 'browse_books' %}">Browse books</a> to get started.
+  </div>
+  {% endif %}
+</div>
+
+<!-- History -->
+<div class="table-card">
+  <div class="p-3 border-bottom">
+    <h6 class="mb-0 fw-bold"><i class="fa fa-history me-2" style="color:#e8a020;"></i>Borrowing History</h6>
+  </div>
+  {% if history %}
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Book</th>
+        <th>Borrowed</th>
+        <th>Due</th>
+        <th>Returned</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in history %}
+      <tr>
+        <td><strong>{{ r.book.title }}</strong></td>
+        <td>{{ r.borrow_date }}</td>
+        <td>{{ r.due_date }}</td>
+        <td>{{ r.return_date|default:"—" }}</td>
+        <td>
+          {% if r.status == 'returned' %}
+          <span class="badge badge-returned">Returned</span>
+          {% elif r.is_overdue %}
+          <span class="badge badge-overdue">Overdue</span>
+          {% else %}
+          <span class="badge badge-borrowed">Borrowed</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="p-4 text-center text-muted">No borrowing history yet.</div>
+  {% endif %}
+</div>
+{% endblock %}

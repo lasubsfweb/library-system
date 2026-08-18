@@ -1,0 +1,24 @@
+{% extends 'library/auth_base.html' %}
+{% block title %}Admin Login — Agape Library{% endblock %}
+{% block subtitle %}Library Administration{% endblock %}
+
+{% block form %}
+<form method="post" novalidate>
+  {% csrf_token %}
+  <div class="mb-3">
+    <label class="form-label"><i class="fa fa-envelope me-1"></i>Email Address</label>
+    {{ form.email }}
+    <ul class="errorlist">{% for e in form.email.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+  </div>
+  <div class="mb-3">
+    <label class="form-label"><i class="fa fa-lock me-1"></i>Password</label>
+    {{ form.password }}
+    <ul class="errorlist">{% for e in form.password.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+  </div>
+  <button type="submit" class="btn-submit" style="background:#e8a020;">Admin Sign In</button>
+</form>
+{% endblock %}
+
+{% block footer %}
+<a href="{% url 'home' %}">← Back to Home</a>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends 'library/base.html' %}
+{% block title %}Admin Dashboard — NovaRead{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h4 class="mb-0 fw-bold" style="color:var(--text-main);">Admin Dashboard</h4>
+    <small class="text-muted">Welcome back, {{ user.name }}</small>
+  </div>
+  <a href="{% url 'admin_borrow' %}" class="btn-accent"><i class="fa fa-plus me-1"></i>Issue Book</a>
+</div>
+
+<!-- Stats -->
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6">
+    <div class="stat-card">
+      <div class="stat-value">{{ total_books }}</div>
+      <div class="stat-label"><i class="fa fa-book me-1"></i>Total Books</div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="stat-card" style="border-left-color:#0d6efd;">
+      <div class="stat-value" style="color:#0d6efd;">{{ total_students }}</div>
+      <div class="stat-label"><i class="fa fa-users me-1"></i>Students</div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="stat-card" style="border-left-color:#fd7e14;">
+      <div class="stat-value" style="color:#fd7e14;">{{ total_borrowed }}</div>
+      <div class="stat-label"><i class="fa fa-exchange-alt me-1"></i>Active Borrows</div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="stat-card" style="border-left-color:#dc3545;">
+      <div class="stat-value" style="color:#dc3545;">{{ overdue_count }}</div>
+      <div class="stat-label"><i class="fa fa-exclamation-triangle me-1"></i>Overdue</div>
+    </div>
+  </div>
+</div>
+
+<!-- Overdue Alert -->
+{% if overdue_list %}
+<div class="alert alert-danger mb-4">
+  <strong><i class="fa fa-exclamation-triangle me-1"></i>{{ overdue_count }} overdue book(s):</strong>
+  {% for r in overdue_list %}
+    <span class="ms-2">{{ r.student.name }} — "{{ r.book.title }}" ({{ r.days_overdue }}d overdue, ₦{{ r.fine_amount }})</span>{% if not forloop.last %},{% endif %}
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- Recent Transactions -->
+<div class="table-card">
+  <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
+    <h6 class="mb-0 fw-bold"><i class="fa fa-exchange-alt me-2" style="color:#e8a020;"></i>Recent Transactions</h6>
+    <a href="{% url 'manage_borrowings' %}" style="font-size:.85rem;color:#e8a020;text-decoration:none;">View All →</a>
+  </div>
+  {% if recent_borrows %}
+  <table class="table table-hover mb-0">
+    <thead><tr><th>Student</th><th>Matric No.</th><th>Book</th><th>Borrow Date</th><th>Due Date</th><th>Status</th></tr></thead>
+    <tbody>
+      {% for r in recent_borrows %}
+      <tr>
+        <td><strong>{{ r.student.name }}</strong></td>
+        <td>{{ r.student.matric_number }}</td>
+        <td>{{ r.book.title }}</td>
+        <td>{{ r.borrow_date }}</td>
+        <td>{{ r.due_date }}</td>
+        <td>
+          {% if r.status == 'returned' %}
+            <span class="badge badge-returned">Returned</span>
+          {% elif r.is_overdue %}
+            <span class="badge badge-overdue">Overdue</span>
+          {% else %}
+            <span class="badge badge-borrowed">Borrowed</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="p-4 text-center text-muted">No transactions yet.</div>
+  {% endif %}
+</div>
+{% endblock %}

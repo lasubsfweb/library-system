@@ -1,0 +1,83 @@
+/* static/css/theme.css */
+
+:root {
+  /* Light Theme Variables */
+  --primary: #047857;          /* Deep Emerald Green */
+  --primary-hover: #065f46;
+  --accent: #65a30d;           /* Vibrant Lime Green */
+  --accent-hover: #4d7c0f;
+  
+  --bg-main: #f0fdf4;          /* Very light green tint */
+  --bg-card: #ffffff;
+  --bg-sidebar: #ffffff;
+  --bg-hover: #eef3fa;         /* Light grey/blue for hover */
+  
+  --text-main: #0f172a;        /* Slate dark */
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+  
+  --shadow-color: rgba(0, 0, 0, 0.08);
+  --shadow-card: 0 1px 4px var(--shadow-color);
+  
+  --danger: #ef4444;           /* Red for alerts/overdue */
+}
+
+[data-theme="dark"] {
+  /* Dark Theme Variables */
+  --primary: #047857;          /* Vivid Emerald Green matching the logo */
+  --primary-hover: #036347;
+  --accent: #65a30d;           /* Bright Lime Green */
+  --accent-hover: #4d7c0f;
+  
+  --bg-main: #060b09;          /* Almost pure black with a subtle green undertone */
+  --bg-card: #0e1a14;          /* Deep rich green-black for cards */
+  --bg-sidebar: #0e1a14;
+  --bg-hover: #162f23;         /* Noticeable hover state */
+  
+  --text-main: #ffffff;        /* Pure white so text pops clearly */
+  --text-muted: #d5e5db;       /* Very bright minty white so muted text pops out more */
+  --border-color: #1a3628;     /* Subtle green border */
+  
+  --shadow-color: rgba(0, 0, 0, 0.6);
+  --shadow-card: 0 4px 12px var(--shadow-color);
+}
+
+/* Global Styles utilizing theme variables */
+body {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Base structural overrides for dark mode compatibility */
+.bg-card {
+  background-color: var(--bg-card);
+}
+
+.text-main {
+  color: var(--text-main);
+}
+
+/* Force all Bootstrap muted text to respect our bright theme colors */
+.text-muted {
+  color: var(--text-muted) !important;
+}
+
+.border-themed {
+  border-color: var(--border-color) !important;
+}
+
+/* Toggle Switch Styles */
+.theme-toggle {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  transition: color 0.2s;
+}
+
+.theme-toggle:hover {
+  color: #fff;
+}

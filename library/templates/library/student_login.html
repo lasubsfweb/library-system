@@ -1,0 +1,25 @@
+{% extends 'library/auth_base.html' %}
+{% block title %}Student Login — Agape Library{% endblock %}
+{% block subtitle %}Sign in with your matric number{% endblock %}
+
+{% block form %}
+<form method="post" novalidate>
+  {% csrf_token %}
+  <div class="mb-3">
+    <label class="form-label"><i class="fa fa-id-card me-1"></i>Matric Number</label>
+    {{ form.matric_number }}
+    <ul class="errorlist">{% for e in form.matric_number.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+  </div>
+  <div class="mb-3">
+    <label class="form-label"><i class="fa fa-lock me-1"></i>Password</label>
+    {{ form.password }}
+    <ul class="errorlist">{% for e in form.password.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+  </div>
+  <button type="submit" class="btn-submit">Sign In</button>
+</form>
+{% endblock %}
+
+{% block footer %}
+Don't have an account? <a href="{% url 'student_signup' %}">Sign up</a> &nbsp;|&nbsp; <a href="{% url 'home' %}">←
+  Home</a>
+{% endblock %}
