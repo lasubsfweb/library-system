@@ -259,23 +259,29 @@ def manage_books(request):
 
 @require_admin
 def add_book(request):
-    form = BookForm(request.POST or None)
-    if request.method == 'POST' and form.is_valid():
-        form.save()
-        messages.success(request, "Book added successfully.")
-        return redirect('manage_books')
+    if request.method == 'POST':
+        form = BookForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Book added successfully.')
+            return redirect('manage_books')
+    else:
+        form = BookForm()
     return render(request, 'admin_panel/book_form.html', {'form': form, 'action': 'Add', 'user': request.current_user})
 
 
 @require_admin
 def edit_book(request, book_id):
     book = get_object_or_404(Book, pk=book_id)
-    form = BookForm(request.POST or None, instance=book)
-    if request.method == 'POST' and form.is_valid():
-        form.save()
-        messages.success(request, "Book updated.")
-        return redirect('manage_books')
-    return render(request, 'admin_panel/book_form.html', {'form': form, 'action': 'Edit', 'book': book, 'user': request.current_user})
+    if request.method == 'POST':
+        form = BookForm(request.POST, request.FILES, instance=book)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Book updated successfully.')
+            return redirect('manage_books')
+    else:
+        form = BookForm(instance=book)
+    return render(request, 'admin_panel/book_form.html', {'form': form, 'action': 'Edit', 'user': request.current_user})
 
 
 @require_admin

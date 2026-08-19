@@ -106,6 +106,7 @@ class Book(models.Model):
     isbn        = models.CharField(max_length=20, unique=True)
     quantity    = models.PositiveIntegerField(default=1)
     description = models.TextField(blank=True)
+    soft_copy   = models.FileField(upload_to='books/soft_copies/', null=True, blank=True)
     added_on    = models.DateTimeField(default=timezone.now)
 
     @property

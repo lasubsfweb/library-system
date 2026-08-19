@@ -79,3 +79,7 @@ AUTH_USER_MODEL = 'library.User'
 
 # Email Settings (Using console backend for testing, change to SMTP in production)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Media Settings
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'

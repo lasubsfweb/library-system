@@ -40,7 +40,7 @@ class AdminLoginForm(forms.Form):
 class BookForm(forms.ModelForm):
     class Meta:
         model  = Book
-        fields = ['title', 'author', 'category', 'isbn', 'quantity', 'description']
+        fields = ['title', 'author', 'category', 'isbn', 'quantity', 'description', 'soft_copy']
         widgets = {
             'description': forms.Textarea(attrs={'rows': 3}),
         }

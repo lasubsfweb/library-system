@@ -6,3 +6,4 @@ staticfiles/
 .env
 .idea/
 .vscode/
+media/
