@@ -7,8 +7,36 @@
   <span class="text-muted">{{ students.count }} student(s)</span>
 </div>
 
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <a href="?status=all{% if q %}&q={{ q }}{% endif %}" class="text-decoration-none">
+      <div class="stat-card {% if status == 'all' or not status %}border-primary{% endif %}" style="border-left-color:#0d6efd;">
+        <div class="stat-value" style="color:#0d6efd;">{{ total_students }}</div>
+        <div class="stat-label"><i class="fa fa-users me-1"></i>Total Students</div>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-4">
+    <a href="?status=approved{% if q %}&q={{ q }}{% endif %}" class="text-decoration-none">
+      <div class="stat-card {% if status == 'approved' %}border-success{% endif %}" style="border-left-color:#198754;">
+        <div class="stat-value" style="color:#198754;">{{ approved_students }}</div>
+        <div class="stat-label"><i class="fa fa-user-check me-1"></i>Approved</div>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-4">
+    <a href="?status=pending{% if q %}&q={{ q }}{% endif %}" class="text-decoration-none">
+      <div class="stat-card {% if status == 'pending' %}border-info{% endif %}" style="border-left-color:#0dcaf0;">
+        <div class="stat-value" style="color:#0dcaf0;">{{ pending_students }}</div>
+        <div class="stat-label"><i class="fa fa-user-clock me-1"></i>Pending Approval</div>
+      </div>
+    </a>
+  </div>
+</div>
+
 <div class="table-card p-3 mb-4">
   <form method="get" class="row g-2">
+    <input type="hidden" name="status" value="{{ status }}">
     <div class="col-md-9">
       <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Search by name, matric number, or department...">
     </div>
@@ -21,7 +49,7 @@
 <div class="table-card">
   {% if students %}
   <table class="table table-hover mb-0">
-    <thead><tr><th>#</th><th>Name</th><th>Matric No.</th><th>Department</th><th>Level</th><th>Joined</th><th>Actions</th></tr></thead>
+    <thead><tr><th>#</th><th>Name</th><th>Matric No.</th><th>Department</th><th>Status</th><th>Joined</th><th>Actions</th></tr></thead>
     <tbody>
       {% for s in students %}
       <tr>
@@ -29,11 +57,25 @@
         <td><strong>{{ s.name }}</strong></td>
         <td><code>{{ s.matric_number }}</code></td>
         <td>{{ s.department }}</td>
-        <td>{{ s.level }} Level</td>
+        <td>
+          {% if s.is_approved %}
+            <span class="badge bg-success">Approved</span>
+          {% else %}
+            <span class="badge bg-info text-dark">Pending</span>
+          {% endif %}
+        </td>
         <td>{{ s.date_joined|date:"d M Y" }}</td>
         <td>
-          <a href="{% url 'edit_student' s.pk %}" class="btn btn-sm btn-outline-primary me-1"><i class="fa fa-edit"></i></a>
-          <a href="{% url 'delete_student' s.pk %}" class="btn btn-sm btn-outline-danger"><i class="fa fa-trash"></i></a>
+          <div class="d-flex align-items-center">
+            {% if not s.is_approved %}
+            <form method="post" action="{% url 'approve_student' s.pk %}" class="me-1">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-success" title="Approve"><i class="fa fa-check"></i></button>
+            </form>
+            {% endif %}
+            <a href="{% url 'edit_student' s.pk %}" class="btn btn-sm btn-outline-primary me-1"><i class="fa fa-edit"></i></a>
+            <a href="{% url 'delete_student' s.pk %}" class="btn btn-sm btn-outline-danger"><i class="fa fa-trash"></i></a>
+          </div>
         </td>
       </tr>
       {% endfor %}

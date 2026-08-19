@@ -292,10 +292,33 @@ def delete_book(request, book_id):
 @require_admin
 def manage_students(request):
     q = request.GET.get('q', '')
-    students = User.objects.filter(role='student')
+    status_filter = request.GET.get('status', 'all')
+    
+    base_qs = User.objects.filter(role='student')
+    
+    total_students = base_qs.count()
+    approved_students = base_qs.filter(is_approved=True).count()
+    pending_students = base_qs.filter(is_approved=False).count()
+    
+    students = base_qs.order_by('-date_joined')
+    
+    if status_filter == 'approved':
+        students = students.filter(is_approved=True)
+    elif status_filter == 'pending':
+        students = students.filter(is_approved=False)
+        
     if q:
         students = students.filter(Q(name__icontains=q) | Q(matric_number__icontains=q) | Q(department__icontains=q))
-    ctx = {'students': students, 'q': q, 'user': request.current_user}
+        
+    ctx = {
+        'students': students, 
+        'q': q, 
+        'status': status_filter,
+        'total_students': total_students,
+        'approved_students': approved_students,
+        'pending_students': pending_students,
+        'user': request.current_user
+    }
     return render(request, 'admin_panel/manage_students.html', ctx)
 
 
