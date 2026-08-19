@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils import timezone
 from django.db.models import Q
+from django.core.mail import send_mail
 import datetime
 
 from .models import User, Book, BorrowRecord
@@ -62,13 +63,14 @@ def student_signup(request):
     if request.method == 'POST' and form.is_valid():
         d = form.cleaned_data
         new_user = User.objects.create_student(
+            email=d.get('email'),
             matric_number=d['matric_number'],
             name=d['name'],
             department=d['department'],
             level=d['level'],
             password=d['password'],
         )
-        messages.success(request, f"Account created! Welcome, {new_user.name}. Please log in.")
+        messages.success(request, f"Account created! Welcome, {new_user.name}. Your account needs approval from the admin.", extra_tags="needs_approval")
         return redirect('student_login')
     return render(request, 'library/student_signup.html', {'form': form})
 
@@ -84,6 +86,9 @@ def student_login(request):
         try:
             user = User.objects.get(matric_number=matric, role='student')
             if user.check_password(password):
+                if not user.is_approved:
+                    messages.error(request, "Your account is currently pending admin approval.")
+                    return redirect('student_login')
                 request.session['user_id'] = user.pk
                 messages.success(request, f"Welcome back, {user.name}!")
                 return redirect('student_dashboard')
@@ -206,6 +211,8 @@ def admin_dashboard(request):
     total_returned = BorrowRecord.objects.filter(status='returned').count()
     overdue_list   = [r for r in BorrowRecord.objects.filter(status='borrowed').select_related('student', 'book') if r.is_overdue]
     recent_borrows = BorrowRecord.objects.order_by('-borrow_date')[:8].select_related('student', 'book')
+    total_unapproved = User.objects.filter(role='student', is_approved=False).count()
+    pending_approvals = User.objects.filter(role='student', is_approved=False).order_by('-date_joined')
 
     ctx = {
         'user': admin,
@@ -216,8 +223,27 @@ def admin_dashboard(request):
         'overdue_count': len(overdue_list),
         'overdue_list': overdue_list,
         'recent_borrows': recent_borrows,
+        'total_unapproved': total_unapproved,
+        'pending_approvals': pending_approvals,
     }
     return render(request, 'admin_panel/dashboard.html', ctx)
+
+@require_admin
+def approve_student(request, student_id):
+    student = get_object_or_404(User, pk=student_id, role='student')
+    if request.method == 'POST':
+        student.is_approved = True
+        student.save()
+        if student.email:
+            send_mail(
+                subject='Account Approved - Agape Library',
+                message=f'Hello {student.name},\n\nYour account has been approved by the admin. You can now log in to the library portal.',
+                from_email='admin@agapelibrary.com',
+                recipient_list=[student.email],
+                fail_silently=True,
+            )
+        messages.success(request, f'Student {student.name} approved successfully.')
+    return redirect('admin_dashboard')
 
 
 # Books CRUD

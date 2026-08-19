@@ -48,6 +48,44 @@
 </div>
 {% endif %}
 
+<!-- Pending Approvals -->
+{% if pending_approvals %}
+<div class="table-card mb-4" style="border-left: 4px solid #0dcaf0;">
+  <div class="d-flex justify-content-between align-items-center p-3 border-bottom bg-light">
+    <h6 class="mb-0 fw-bold" style="color: #0dcaf0;"><i class="fa fa-user-clock me-2"></i>Accounts Pending Approval ({{ total_unapproved }})</h6>
+  </div>
+  <table class="table table-hover mb-0">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Matric No.</th>
+        <th>Email</th>
+        <th>Department</th>
+        <th>Date Joined</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in pending_approvals %}
+      <tr>
+        <td><strong>{{ p.name }}</strong></td>
+        <td>{{ p.matric_number }}</td>
+        <td>{{ p.email }}</td>
+        <td>{{ p.department }} ({{ p.level }})</td>
+        <td>{{ p.date_joined|date:"M d, Y" }}</td>
+        <td>
+          <form method="post" action="{% url 'approve_student' p.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-success"><i class="fa fa-check me-1"></i>Approve</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
 <!-- Recent Transactions -->
 <div class="table-card">
   <div class="d-flex justify-content-between align-items-center p-3 border-bottom">

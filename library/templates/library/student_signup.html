@@ -15,6 +15,11 @@
     <ul class="errorlist">{% for e in form.name.errors %}<li>{{ e }}</li>{% endfor %}</ul>
   </div>
   <div class="mb-3">
+    <label class="form-label">Email Address</label>
+    {{ form.email }}
+    <ul class="errorlist">{% for e in form.email.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+  </div>
+  <div class="mb-3">
     <label class="form-label">Matric Number</label>
     {{ form.matric_number }}
     <ul class="errorlist">{% for e in form.matric_number.errors %}<li>{{ e }}</li>{% endfor %}</ul>

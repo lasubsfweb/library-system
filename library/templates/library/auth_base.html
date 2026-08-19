@@ -138,9 +138,11 @@
     </div>
 
     {% for message in messages %}
-    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}">
-      {{ message }}
-    </div>
+      {% if 'needs_approval' not in message.tags %}
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}">
+          {{ message }}
+        </div>
+      {% endif %}
     {% endfor %}
 
     {% block form %}{% endblock %}
@@ -148,7 +150,23 @@
     <div class="auth-footer">{% block footer %}{% endblock %}</div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="{% static 'js/theme.js' %}?v=2"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      {% for message in messages %}
+        {% if 'needs_approval' in message.tags %}
+          Swal.fire({
+            title: 'Account Created!',
+            text: '{{ message }}',
+            icon: 'success',
+            confirmButtonColor: '#e8a020',
+            confirmButtonText: 'Got it'
+          });
+        {% endif %}
+      {% endfor %}
+    });
+  </script>
 </body>
 
 </html>

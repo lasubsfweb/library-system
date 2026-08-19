@@ -26,6 +26,7 @@ urlpatterns = [
     path('admin/students/',    views.manage_students,  name='manage_students'),
     path('admin/students/<int:student_id>/edit/',   views.edit_student,   name='edit_student'),
     path('admin/students/<int:student_id>/delete/', views.delete_student, name='delete_student'),
+    path('admin/students/<int:student_id>/approve/', views.approve_student, name='approve_student'),
 
     # Admin — Borrowings
     path('admin/borrowings/',           views.manage_borrowings, name='manage_borrowings'),

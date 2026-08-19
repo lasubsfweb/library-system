@@ -8,15 +8,19 @@ import datetime
 
 class UserManager(BaseUserManager):
 
-    def create_student(self, matric_number, name, department, level, password):
+    def create_student(self, email, matric_number, name, department, level, password):
         if not matric_number:
             raise ValueError("Matric number is required")
+        if not email:
+            raise ValueError("Email is required")
         user = self.model(
+            email=self.normalize_email(email),
             matric_number=matric_number.upper(),
             name=name,
             department=department,
             level=level,
             role='student',
+            is_approved=False,
         )
         user.set_password(password)
         user.save(using=self._db)
@@ -29,6 +33,7 @@ class UserManager(BaseUserManager):
             email=self.normalize_email(email),
             name=name,
             role='admin',
+            is_approved=True,
         )
         user.set_password(password)
         user.save(using=self._db)
@@ -39,6 +44,7 @@ class UserManager(BaseUserManager):
             email=self.normalize_email(email),
             name=extra_fields.get('name', 'Super Admin'),
             role='admin',
+            is_approved=True,
         )
         user.set_password(password)
         user.is_staff = True
@@ -63,6 +69,7 @@ class User(AbstractBaseUser):
     department     = models.CharField(max_length=100, blank=True)
     level          = models.CharField(max_length=10, choices=LEVEL_CHOICES, blank=True)
     role           = models.CharField(max_length=10, choices=ROLE_CHOICES, default='student')
+    is_approved    = models.BooleanField(default=False)
     date_joined    = models.DateTimeField(default=timezone.now)
     is_active      = models.BooleanField(default=True)
     is_staff       = models.BooleanField(default=False)

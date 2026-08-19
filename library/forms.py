@@ -5,6 +5,7 @@ import datetime
 
 class StudentSignupForm(forms.Form):
     name          = forms.CharField(max_length=150, label="Full Name")
+    email         = forms.EmailField(label="Email Address")
     matric_number = forms.CharField(max_length=20, label="Matric Number")
     department    = forms.CharField(max_length=100)
     level         = forms.ChoiceField(choices=User.LEVEL_CHOICES)
