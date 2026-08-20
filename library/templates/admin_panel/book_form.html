@@ -12,7 +12,7 @@
     {% csrf_token %}
     {% for field in form %}
       {% if field.name == 'soft_copy' %}
-        <div class="mb-3 p-3" style="border:1px dashed var(--border-color); border-radius:8px; background:rgba(0,0,0,0.1);">
+        <div id="group_soft_copy" class="mb-3 p-3" style="border:1px dashed var(--border-color); border-radius:8px; background:rgba(0,0,0,0.1);">
           <label class="form-label d-flex align-items-center">
             <i class="fa fa-cloud-upload-alt me-2" style="color:var(--accent);"></i>
             Upload File (< 10MB)
@@ -22,7 +22,7 @@
           {% if field.errors %}<div class="text-danger" style="font-size:.82rem;">{{ field.errors.0 }}</div>{% endif %}
         </div>
       {% elif field.name == 'external_drive_link' %}
-        <div class="mb-4 p-3" style="border:1px solid #0d6efd; border-radius:8px; background:rgba(13,110,253,0.05);">
+        <div id="group_external_drive_link" class="mb-4 p-3" style="border:1px solid #0d6efd; border-radius:8px; background:rgba(13,110,253,0.05);">
           <label class="form-label d-flex align-items-center justify-content-between">
             <span><i class="fa fa-link me-2" style="color:#0d6efd;"></i>Link External Drive (> 10MB)</span>
             <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#driveGuideModal">
@@ -34,7 +34,7 @@
           {% if field.errors %}<div class="text-danger" style="font-size:.82rem;">{{ field.errors.0 }}</div>{% endif %}
         </div>
       {% else %}
-        <div class="mb-3">
+        <div id="group_{{ field.name }}" class="mb-3">
           <label class="form-label">{{ field.label }}</label>
           {{ field }}
           {% if field.errors %}<div class="text-danger" style="font-size:.82rem;">{{ field.errors.0 }}</div>{% endif %}
@@ -71,4 +71,38 @@
     </div>
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const formatSelect = document.getElementById('id_format');
+    const groupQuantity = document.getElementById('group_quantity');
+    const groupSoftCopy = document.getElementById('group_soft_copy');
+    const groupExternalLink = document.getElementById('group_external_drive_link');
+    const quantityInput = document.getElementById('id_quantity');
+
+    function toggleFields() {
+      if (!formatSelect) return;
+      const format = formatSelect.value;
+      if (format === 'Hard Copy') {
+        if(groupQuantity) groupQuantity.style.display = 'block';
+        if(groupSoftCopy) groupSoftCopy.style.display = 'none';
+        if(groupExternalLink) groupExternalLink.style.display = 'none';
+      } else if (format === 'Soft Copy') {
+        if(groupQuantity) groupQuantity.style.display = 'none';
+        if(quantityInput) quantityInput.value = 0;
+        if(groupSoftCopy) groupSoftCopy.style.display = 'block';
+        if(groupExternalLink) groupExternalLink.style.display = 'block';
+      } else {
+        if(groupQuantity) groupQuantity.style.display = 'block';
+        if(groupSoftCopy) groupSoftCopy.style.display = 'block';
+        if(groupExternalLink) groupExternalLink.style.display = 'block';
+      }
+    }
+
+    if (formatSelect) {
+      formatSelect.addEventListener('change', toggleFields);
+      toggleFields();
+    }
+  });
+</script>
 {% endblock %}

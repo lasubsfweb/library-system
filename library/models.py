@@ -100,11 +100,18 @@ class Book(models.Model):
         ('Medicine', 'Medicine'), ('Law', 'Law'), ('General', 'General'),
     )
 
+    FORMAT_CHOICES = (
+        ('Hard Copy', 'Hard Copy'),
+        ('Soft Copy', 'Soft Copy'),
+        ('Both', 'Both')
+    )
+
     title       = models.CharField(max_length=200)
     author      = models.CharField(max_length=100)
     category    = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='General')
+    format      = models.CharField(max_length=20, choices=FORMAT_CHOICES, default='Both')
     isbn        = models.CharField(max_length=20, unique=True)
-    quantity    = models.PositiveIntegerField(default=1)
+    quantity    = models.PositiveIntegerField(default=0)
     description = models.TextField(blank=True)
     soft_copy   = models.FileField(upload_to='books/soft_copies/', null=True, blank=True)
     external_drive_link = models.URLField(blank=True, null=True, help_text="For files > 10MB. Paste Google Drive link here.")
@@ -117,6 +124,8 @@ class Book(models.Model):
 
     @property
     def is_available(self):
+        if self.format == 'Soft Copy':
+            return False
         return self.available_copies > 0
 
     def __str__(self):
