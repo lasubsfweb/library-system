@@ -90,7 +90,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'ubtwmj9c',
     'API_KEY': '871222689477815',
-    'API_SECRET': 'U4PGSv-olCkDmY43MYDtEHeXayA'
+    'API_SECRET': 'U4PGSv-olCkDmY43MYDtEHeXayA',
+    'SECURE': True,
 }
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.RawMediaCloudinaryStorage'
