@@ -14,8 +14,8 @@ class UserAdmin(BaseUserAdmin):
 
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
-    list_display  = ('title', 'author', 'category', 'isbn', 'quantity')
-    search_fields = ('title', 'author', 'isbn')
+    list_display  = ('title', 'author', 'category', 'quantity')
+    search_fields = ('title', 'author')
     list_filter   = ('category',)
 
 @admin.register(BorrowRecord)

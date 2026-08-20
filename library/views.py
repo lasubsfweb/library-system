@@ -151,7 +151,7 @@ def browse_books(request):
     category = request.GET.get('category', '')
     books = Book.objects.all()
     if q:
-        books = books.filter(Q(title__icontains=q) | Q(author__icontains=q) | Q(isbn__icontains=q))
+        books = books.filter(Q(title__icontains=q) | Q(author__icontains=q))
     if category:
         books = books.filter(category=category)
     categories = Book.CATEGORY_CHOICES
@@ -252,7 +252,7 @@ def manage_books(request):
     q = request.GET.get('q', '')
     books = Book.objects.all()
     if q:
-        books = books.filter(Q(title__icontains=q) | Q(author__icontains=q) | Q(isbn__icontains=q))
+        books = books.filter(Q(title__icontains=q) | Q(author__icontains=q))
     ctx = {'books': books, 'q': q, 'user': request.current_user}
     return render(request, 'admin_panel/manage_books.html', ctx)
 

@@ -11,7 +11,7 @@
 <div class="table-card p-3 mb-4">
   <form method="get" class="row g-2">
     <div class="col-md-9">
-      <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Search title, author, ISBN...">
+      <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Search title or author...">
     </div>
     <div class="col-md-3">
       <button type="submit" class="btn w-100" style="background:var(--primary);color:#fff;font-weight:600;">Search</button>
@@ -22,7 +22,7 @@
 <div class="table-card">
   {% if books %}
   <table class="table table-hover mb-0">
-    <thead><tr><th>#</th><th>Title</th><th>Author</th><th>Category</th><th>ISBN</th><th>Qty</th><th>Available</th><th>Actions</th></tr></thead>
+    <thead><tr><th>#</th><th>Title</th><th>Author</th><th>Category</th><th>Qty</th><th>Available</th><th>Actions</th></tr></thead>
     <tbody>
       {% for book in books %}
       <tr>
@@ -30,7 +30,6 @@
         <td><strong>{{ book.title }}</strong></td>
         <td>{{ book.author }}</td>
         <td><span class="badge bg-secondary">{{ book.category }}</span></td>
-        <td><code>{{ book.isbn }}</code></td>
         <td>{{ book.quantity }}</td>
         <td>
           {% if book.is_available %}

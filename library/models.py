@@ -94,10 +94,10 @@ class User(AbstractBaseUser):
 
 class Book(models.Model):
     CATEGORY_CHOICES = (
-        ('Science', 'Science'), ('Technology', 'Technology'),
-        ('Engineering', 'Engineering'), ('Mathematics', 'Mathematics'),
-        ('Arts', 'Arts'), ('Social Science', 'Social Science'),
-        ('Medicine', 'Medicine'), ('Law', 'Law'), ('General', 'General'),
+        ('Education', 'Education'), ('Finances', 'Finances'),
+        ('Wealth', 'Wealth'), ('Mindset', 'Mindset'),
+        ('Science', 'Science'), ('Arts', 'Arts'),
+        ('Technology', 'Technology'), ('General', 'General'),
     )
 
     FORMAT_CHOICES = (
@@ -110,7 +110,9 @@ class Book(models.Model):
     author      = models.CharField(max_length=100)
     category    = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='General')
     format      = models.CharField(max_length=20, choices=FORMAT_CHOICES, default='Both')
-    isbn        = models.CharField(max_length=20, unique=True)
+    faculty     = models.CharField(max_length=100, blank=True, null=True)
+    department  = models.CharField(max_length=100, blank=True, null=True)
+    level       = models.CharField(max_length=10, choices=User.LEVEL_CHOICES, blank=True, null=True)
     quantity    = models.PositiveIntegerField(default=0)
     description = models.TextField(blank=True)
     soft_copy   = models.FileField(upload_to='books/soft_copies/', null=True, blank=True)

@@ -11,7 +11,7 @@
 <div class="table-card p-3 mb-4">
   <form method="get" class="row g-2 align-items-end">
     <div class="col-md-6">
-      <label class="form-label mb-1" style="font-size:.8rem;font-weight:600;">Search by title, author, or ISBN</label>
+      <label class="form-label mb-1" style="font-size:.8rem;font-weight:600;">Search by title or author</label>
       <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="e.g. Python, John Smith...">
     </div>
     <div class="col-md-4">
@@ -44,7 +44,15 @@
       </div>
       <div style="padding:1rem 1.5rem;">
         <div class="d-flex justify-content-between align-items-center mb-2">
-          <small class="text-muted">ISBN: {{ book.isbn }}</small>
+          {% if book.category == 'Education' %}
+          <small class="text-muted">
+            <i class="fa fa-graduation-cap me-1"></i>
+            {% if book.department %}{{ book.department }} {% endif %}
+            {% if book.level %}({{ book.level }}){% endif %}
+          </small>
+          {% else %}
+          <div></div>
+          {% endif %}
           {% if book.format == 'Soft Copy' %}
           <span class="badge" style="background:var(--primary);color:#fff;"><i class="fa fa-desktop me-1"></i>E-Book</span>
           {% elif book.is_available %}

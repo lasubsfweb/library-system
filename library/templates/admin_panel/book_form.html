@@ -34,7 +34,7 @@
           {% if field.errors %}<div class="text-danger" style="font-size:.82rem;">{{ field.errors.0 }}</div>{% endif %}
         </div>
       {% else %}
-        <div id="group_{{ field.name }}" class="mb-3">
+        <div id="group_{{ field.name }}" class="mb-3 {% if field.name in 'faculty,department,level' %}education-field{% endif %}">
           <label class="form-label">{{ field.label }}</label>
           {{ field }}
           {% if field.errors %}<div class="text-danger" style="font-size:.82rem;">{{ field.errors.0 }}</div>{% endif %}
@@ -79,6 +79,7 @@
     const groupSoftCopy = document.getElementById('group_soft_copy');
     const groupExternalLink = document.getElementById('group_external_drive_link');
     const quantityInput = document.getElementById('id_quantity');
+    const categorySelect = document.getElementById('id_category');
 
     function toggleFields() {
       if (!formatSelect) return;
@@ -99,9 +100,22 @@
       }
     }
 
+    function toggleEducationFields() {
+      if (!categorySelect) return;
+      const isEdu = categorySelect.value === 'Education';
+      document.querySelectorAll('.education-field').forEach(el => {
+        el.style.display = isEdu ? 'block' : 'none';
+      });
+    }
+
     if (formatSelect) {
       formatSelect.addEventListener('change', toggleFields);
       toggleFields();
+    }
+
+    if (categorySelect) {
+      categorySelect.addEventListener('change', toggleEducationFields);
+      toggleEducationFields();
     }
   });
 </script>
