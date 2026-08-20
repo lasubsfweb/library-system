@@ -17,6 +17,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'cloudinary_storage',
+    'cloudinary',
     'library',
 ]
 
@@ -83,3 +85,12 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # Media Settings
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# Cloudinary Configuration
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'ubtwmj9c',
+    'API_KEY': '871222689477815',
+    'API_SECRET': 'U4PGSv-olCkDmY43MYDtEHeXayA'
+}
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.RawMediaCloudinaryStorage'
