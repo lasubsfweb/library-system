@@ -28,8 +28,10 @@ urlpatterns = [
     path('admin/students/<int:student_id>/delete/', views.delete_student, name='delete_student'),
     path('admin/students/<int:student_id>/approve/', views.approve_student, name='approve_student'),
 
-    # Admin — Borrowings
+    # Admin — Borrowings & Requests
     path('admin/borrowings/',           views.manage_borrowings, name='manage_borrowings'),
-    path('admin/borrowings/issue/',     views.admin_borrow,      name='admin_borrow'),
+    path('admin/requests/',             views.manage_requests,   name='manage_requests'),
+    path('admin/requests/<int:record_id>/approve/', views.admin_approve_request, name='admin_approve_request'),
+    path('admin/requests/<int:record_id>/reject/', views.admin_reject_request, name='admin_reject_request'),
     path('admin/borrowings/<int:record_id>/return/', views.admin_return, name='admin_return'),
 ]

@@ -137,20 +137,25 @@ class Book(models.Model):
 # ─── Borrow Record ────────────────────────────────────────────────────────────
 
 class BorrowRecord(models.Model):
-    STATUS_CHOICES = (('borrowed', 'Borrowed'), ('returned', 'Returned'))
+    STATUS_CHOICES = (
+        ('pending', 'Pending Approval'),
+        ('borrowed', 'Borrowed'),
+        ('returned', 'Returned'),
+        ('rejected', 'Rejected')
+    )
 
     student     = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'role': 'student'})
     book        = models.ForeignKey(Book, on_delete=models.CASCADE)
-    borrow_date = models.DateField(default=timezone.now)
-    due_date    = models.DateField()
+    borrow_date = models.DateField(null=True, blank=True)
+    due_date    = models.DateField(null=True, blank=True)
     return_date = models.DateField(null=True, blank=True)
-    status      = models.CharField(max_length=10, choices=STATUS_CHOICES, default='borrowed')
+    status      = models.CharField(max_length=15, choices=STATUS_CHOICES, default='pending')
 
     BORROW_DAYS = 14
     FINE_PER_DAY = 50  # Naira
 
     def save(self, *args, **kwargs):
-        if not self.due_date:
+        if self.borrow_date and not self.due_date:
             self.due_date = self.borrow_date + datetime.timedelta(days=self.BORROW_DAYS)
         super().save(*args, **kwargs)
 

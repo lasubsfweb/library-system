@@ -132,12 +132,14 @@ def logout_view(request):
 def student_dashboard(request):
     student = request.current_user
     active_borrows = BorrowRecord.objects.filter(student=student, status='borrowed').select_related('book')
+    pending_requests = BorrowRecord.objects.filter(student=student, status='pending').select_related('book')
     history = BorrowRecord.objects.filter(student=student).order_by('-borrow_date').select_related('book')
     overdue = [b for b in active_borrows if b.is_overdue]
 
     ctx = {
         'user': student,
         'active_borrows': active_borrows,
+        'pending_requests': pending_requests,
         'history': history,
         'overdue_count': len(overdue),
         'total_borrowed': history.count(),
@@ -164,10 +166,10 @@ def student_borrow(request, book_id):
     student = request.current_user
     book = get_object_or_404(Book, pk=book_id)
 
-    # Check if student already has this book
-    already = BorrowRecord.objects.filter(student=student, book=book, status='borrowed').exists()
+    # Check if student already has this book requested or borrowed
+    already = BorrowRecord.objects.filter(student=student, book=book, status__in=['borrowed', 'pending']).exists()
     if already:
-        messages.error(request, "You already have this book borrowed.")
+        messages.error(request, "You already have a pending request or borrowed copy of this book.")
         return redirect('browse_books')
 
     if book.available_copies <= 0:
@@ -175,14 +177,12 @@ def student_borrow(request, book_id):
         return redirect('browse_books')
 
     if request.method == 'POST':
-        due = timezone.now().date() + datetime.timedelta(days=14)
         BorrowRecord.objects.create(
             student=student,
             book=book,
-            borrow_date=timezone.now().date(),
-            due_date=due,
+            status='pending'
         )
-        messages.success(request, f'"{book.title}" borrowed! Return by {due.strftime("%d %b %Y")}.')
+        messages.success(request, 'Request successfully submitted. Awaiting admin confirmation.')
         return redirect('student_dashboard')
 
     return render(request, 'library/confirm_borrow.html', {'book': book, 'user': student})
@@ -361,16 +361,33 @@ def manage_borrowings(request):
 
 
 @require_admin
-def admin_borrow(request):
-    form = BorrowForm(request.POST or None)
-    if request.method == 'POST' and form.is_valid():
-        record = form.save(commit=False)
+def manage_requests(request):
+    pending_requests = BorrowRecord.objects.filter(status='pending').order_by('borrow_date').select_related('student', 'book')
+    return render(request, 'admin_panel/pending_requests.html', {'requests': pending_requests, 'user': request.current_user})
+
+@require_admin
+def admin_approve_request(request, record_id):
+    record = get_object_or_404(BorrowRecord, pk=record_id, status='pending')
+    if request.method == 'POST':
+        if record.book.available_copies <= 0:
+            messages.error(request, f'No copies of "{record.book.title}" are available right now.')
+            return redirect('manage_requests')
+            
+        record.status = 'borrowed'
         record.borrow_date = timezone.now().date()
         record.due_date = record.borrow_date + datetime.timedelta(days=14)
         record.save()
-        messages.success(request, f"Book issued to {record.student.name}.")
-        return redirect('manage_borrowings')
-    return render(request, 'admin_panel/borrow_form.html', {'form': form, 'user': request.current_user})
+        messages.success(request, f'Request approved. Book issued to {record.student.name}.')
+    return redirect('manage_requests')
+
+@require_admin
+def admin_reject_request(request, record_id):
+    record = get_object_or_404(BorrowRecord, pk=record_id, status='pending')
+    if request.method == 'POST':
+        record.status = 'rejected'
+        record.save()
+        messages.success(request, f'Request for "{record.book.title}" was rejected.')
+    return redirect('manage_requests')
 
 
 @require_admin
