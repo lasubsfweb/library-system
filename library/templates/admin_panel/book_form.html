@@ -11,16 +11,64 @@
   <form method="post" enctype="multipart/form-data" novalidate>
     {% csrf_token %}
     {% for field in form %}
-    <div class="mb-3">
-      <label class="form-label">{{ field.label }}</label>
-      {{ field }}
-      {% if field.errors %}<div class="text-danger" style="font-size:.82rem;">{{ field.errors.0 }}</div>{% endif %}
-    </div>
+      {% if field.name == 'soft_copy' %}
+        <div class="mb-3 p-3" style="border:1px dashed var(--border-color); border-radius:8px; background:rgba(0,0,0,0.1);">
+          <label class="form-label d-flex align-items-center">
+            <i class="fa fa-cloud-upload-alt me-2" style="color:var(--accent);"></i>
+            Upload File (< 10MB)
+          </label>
+          {{ field }}
+          <small class="text-muted d-block mt-1">For small PDFs/EPUBs. Will be stored securely in the cloud.</small>
+          {% if field.errors %}<div class="text-danger" style="font-size:.82rem;">{{ field.errors.0 }}</div>{% endif %}
+        </div>
+      {% elif field.name == 'external_drive_link' %}
+        <div class="mb-4 p-3" style="border:1px solid #0d6efd; border-radius:8px; background:rgba(13,110,253,0.05);">
+          <label class="form-label d-flex align-items-center justify-content-between">
+            <span><i class="fa fa-link me-2" style="color:#0d6efd;"></i>Link External Drive (> 10MB)</span>
+            <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#driveGuideModal">
+              <i class="fa fa-question-circle me-1"></i>How to upload large files?
+            </button>
+          </label>
+          {{ field }}
+          <small class="text-muted d-block mt-1">Paste a public Google Drive or Dropbox link here.</small>
+          {% if field.errors %}<div class="text-danger" style="font-size:.82rem;">{{ field.errors.0 }}</div>{% endif %}
+        </div>
+      {% else %}
+        <div class="mb-3">
+          <label class="form-label">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}<div class="text-danger" style="font-size:.82rem;">{{ field.errors.0 }}</div>{% endif %}
+        </div>
+      {% endif %}
     {% endfor %}
     <div class="d-flex gap-2 mt-2">
       <button type="submit" class="btn-primary-custom btn">{{ action }} Book</button>
       <a href="{% url 'manage_books' %}" class="btn btn-outline-secondary">Cancel</a>
     </div>
   </form>
+</div>
+
+<!-- Google Drive Guide Modal -->
+<div class="modal fade" id="driveGuideModal" tabindex="-1" aria-labelledby="driveGuideModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background:var(--bg-card);color:var(--text-main);border-radius:12px;">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title fw-bold" id="driveGuideModalLabel"><i class="fa fa-google-drive me-2" style="color:#0f9d58;"></i>Uploading Large Files (> 10MB)</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body pb-4">
+        <ol class="mb-0" style="line-height:1.8;">
+          <li>Go to <a href="https://drive.google.com" target="_blank" style="color:#0d6efd;">Google Drive</a> and upload your large PDF or EPUB file.</li>
+          <li>Right-click the uploaded file and select <strong>Share</strong>.</li>
+          <li>Under "General access", change the dropdown from "Restricted" to <strong class="text-success">"Anyone with the link"</strong>.</li>
+          <li>Click the <strong>Copy link</strong> button.</li>
+          <li>Come back to this form and paste that link into the <strong>Link External Drive</strong> box!</li>
+        </ol>
+      </div>
+      <div class="modal-footer border-top-0 pt-0">
+        <button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal">Got it!</button>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

@@ -107,6 +107,7 @@ class Book(models.Model):
     quantity    = models.PositiveIntegerField(default=1)
     description = models.TextField(blank=True)
     soft_copy   = models.FileField(upload_to='books/soft_copies/', null=True, blank=True)
+    external_drive_link = models.URLField(blank=True, null=True, help_text="For files > 10MB. Paste Google Drive link here.")
     added_on    = models.DateTimeField(default=timezone.now)
 
     @property

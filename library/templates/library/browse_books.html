@@ -62,7 +62,12 @@
         <button class="btn btn-sm w-100 btn-outline-secondary mb-2" disabled>Hard Copy Unavailable</button>
         {% endif %}
         
-        {% if book.soft_copy %}
+        {% if book.external_drive_link %}
+        <a href="{{ book.external_drive_link }}" target="_blank" class="btn btn-sm w-100 btn-primary"
+          style="font-weight:600;border:none;">
+          <i class="fa fa-external-link-alt me-1"></i>Download Soft Copy
+        </a>
+        {% elif book.soft_copy %}
         <a href="{{ book.soft_copy.url }}" target="_blank" class="btn btn-sm w-100 btn-primary"
           style="font-weight:600;border:none;">
           <i class="fa fa-download me-1"></i>Download Soft Copy
